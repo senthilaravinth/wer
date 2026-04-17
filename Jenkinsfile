@@ -7,9 +7,16 @@ pipeline {
     }
 
     stages {
+        stage('Check Files') {
+            steps {
+                // This will show us if the file actually exists in the workspace
+                bat "dir"
+            }
+        }
+
         stage('Docker Build') {
             steps {
-                // Use 'bat' instead of 'sh' for Windows
+                // Building the image
                 bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
@@ -17,7 +24,7 @@ pipeline {
         stage('Docker Run') {
             steps {
                 script {
-                    // Windows batch syntax for ignoring errors if container doesn't exist
+                    // Clean up old container and run new one
                     bat "docker rm -f %CONTAINER_NAME% 2>nul || exit 0"
                     bat "docker run --name %CONTAINER_NAME% %DOCKER_IMAGE%"
                 }
@@ -27,10 +34,8 @@ pipeline {
         stage('Verify Output') {
             steps {
                 script {
-                    echo "Reading the Fibonacci results:"
-                    // Copy file from container to current workspace
+                    // Pull the result out of the container to the Jenkins workspace
                     bat "docker cp %CONTAINER_NAME%:/app/fibonacci_results.txt ."
-                    // 'type' is the Windows equivalent of 'cat'
                     bat "type fibonacci_results.txt"
                 }
             }
@@ -39,7 +44,6 @@ pipeline {
 
     post {
         always {
-            // Clean up using Windows batch
             bat "docker rm -f %CONTAINER_NAME% 2>nul || exit 0"
         }
     }
