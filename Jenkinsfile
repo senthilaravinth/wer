@@ -35,8 +35,8 @@ pipeline {
             steps {
                 script {
                     // Pull the result out of the container to the Jenkins workspace
-                    bat "docker cp %CONTAINER_NAME%:/app/fibonacci_results.txt ."
-                    bat "type fibonacci_results.txt"
+                    bat "docker cp %CONTAINER_NAME%:/app/fibnocci_results.txt ."
+                    bat "type fibnocci_results.txt"
                 }
             }
         }
