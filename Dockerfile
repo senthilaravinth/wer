@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copy the file from your computer into the container image
 # The '.' means "the current directory"
-COPY fibonacci.py .
+COPY fibnocci.py .
 
 # Execute the script
-CMD ["python", "fibonacci.py"]
+CMD ["python", "fibnocci.py"]
