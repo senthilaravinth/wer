@@ -1,9 +1,11 @@
 FROM python:3.9-slim
 
+# Set workspace
 WORKDIR /app
 
-# Copy the script into the container
+# Copy the file from your computer into the container image
+# The '.' means "the current directory"
 COPY fibonacci.py .
 
-# Run the script when the container starts
+# Execute the script
 CMD ["python", "fibonacci.py"]
