@@ -9,19 +9,17 @@ pipeline {
     stages {
         stage('Docker Build') {
             steps {
-                // Build the image from the Dockerfile in the root
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                // Use 'bat' instead of 'sh' for Windows
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
 
         stage('Docker Run') {
             steps {
                 script {
-                    // Remove old container if it exists
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-                    
-                    // Run the container and give it a specific name
-                    sh "docker run --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+                    // Windows batch syntax for ignoring errors if container doesn't exist
+                    bat "docker rm -f %CONTAINER_NAME% 2>nul || exit 0"
+                    bat "docker run --name %CONTAINER_NAME% %DOCKER_IMAGE%"
                 }
             }
         }
@@ -29,10 +27,11 @@ pipeline {
         stage('Verify Output') {
             steps {
                 script {
-                    echo "Reading the Fibonacci results from inside the container:"
-                    // Copy the result file from the container to the Jenkins workspace to view it
-                    sh "docker cp ${CONTAINER_NAME}:/app/fibonacci_results.txt ."
-                    sh "cat fibonacci_results.txt"
+                    echo "Reading the Fibonacci results:"
+                    // Copy file from container to current workspace
+                    bat "docker cp %CONTAINER_NAME%:/app/fibonacci_results.txt ."
+                    // 'type' is the Windows equivalent of 'cat'
+                    bat "type fibonacci_results.txt"
                 }
             }
         }
@@ -40,8 +39,8 @@ pipeline {
 
     post {
         always {
-            // Clean up the container
-            sh "docker rm -f ${CONTAINER_NAME} || true"
+            // Clean up using Windows batch
+            bat "docker rm -f %CONTAINER_NAME% 2>nul || exit 0"
         }
     }
 }
