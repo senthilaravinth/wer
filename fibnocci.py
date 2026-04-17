@@ -7,8 +7,11 @@ def generate_fibonacci(n):
 if __name__ == "__main__":
     n_terms = 20
     result = generate_fibonacci(n_terms)
-    file_path = "fibonacci_results.txt"
+    
+    # We will use 'results.txt' to keep it simple and avoid spelling errors
+    file_path = "results.txt"
+    
     with open(file_path, "w") as f:
         f.write(f"Fibonacci Sequence: {result}")
+    
     print(f"Calculated: {result}")
-

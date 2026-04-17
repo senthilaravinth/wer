@@ -7,16 +7,8 @@ pipeline {
     }
 
     stages {
-        stage('Check Files') {
-            steps {
-                // This will show us if the file actually exists in the workspace
-                bat "dir"
-            }
-        }
-
         stage('Docker Build') {
             steps {
-                // Building the image
                 bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
@@ -24,7 +16,6 @@ pipeline {
         stage('Docker Run') {
             steps {
                 script {
-                    // Clean up old container and run new one
                     bat "docker rm -f %CONTAINER_NAME% 2>nul || exit 0"
                     bat "docker run --name %CONTAINER_NAME% %DOCKER_IMAGE%"
                 }
@@ -34,9 +25,10 @@ pipeline {
         stage('Verify Output') {
             steps {
                 script {
-                    // Pull the result out of the container to the Jenkins workspace
-                    bat "docker cp %CONTAINER_NAME%:/app/fibnocci_results.txt ."
-                    bat "type fibnocci_results.txt"
+                    echo "Copying results from container..."
+                    // We are now looking for results.txt as defined in the Python script
+                    bat "docker cp %CONTAINER_NAME%:/app/results.txt ."
+                    bat "type results.txt"
                 }
             }
         }
